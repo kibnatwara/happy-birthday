@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<script>try{var t=localStorage.getItem("tripTheme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Let's Relax Planning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DDE5D6; --paper:#FAF7F0; --paper2:#EEF1E8; --ink:#2F4A3A; --muted:#5E7363; --line:#D3DCCD; --edge:#C3CFBD;
+  --wood:#9A7444; --wood-soft:#EFE3D2; --steam:#FFFFFF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A231E; --paper:#232E27; --paper2:#2B3730; --ink:#E4ECE3; --muted:#A3B3A6; --line:#36443B; --edge:#3E4D43;
+    --wood:#D2AD7B; --wood-soft:#3A3226; --steam:#2E3A33;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A231E; --paper:#232E27; --paper2:#2B3730; --ink:#E4ECE3; --muted:#A3B3A6; --line:#36443B; --edge:#3E4D43;
+  --wood:#D2AD7B; --wood-soft:#3A3226; --steam:#2E3A33;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;color:var(--ink);min-height:100vh;
+  background:
+    radial-gradient(ellipse 60% 30% at 15% 0%, color-mix(in srgb,var(--steam) 70%,transparent) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 25% at 90% 8%, color-mix(in srgb,var(--steam) 55%,transparent) 0%, transparent 70%),
+    var(--bg);
+  font-family:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  font-size:16px;line-height:1.65}
+.wrap{max-width:640px;margin:0 auto;padding:64px 18px 64px}
+h1{font-family:"Noto Serif Thai",Georgia,serif;font-weight:600;font-size:clamp(1.9rem,7vw,2.6rem);line-height:1.2;margin:0 0 8px;letter-spacing:.01em}
+h1::after{content:"";display:block;width:56px;height:3px;border-radius:3px;background:var(--wood);margin-top:12px}
+.lede{color:var(--muted);margin:0 0 24px}
+.controls{background:var(--paper);border:1px solid var(--edge);border-radius:22px;padding:18px}
+.ctrl{margin-bottom:16px}.ctrl:last-child{margin-bottom:0}
+.ctrl-label{font-weight:600;font-size:.95rem;margin-bottom:8px;display:block}
+.pickup{display:flex;align-items:center;gap:12px}
+.pickup button{width:44px;height:44px;border-radius:50%;border:1px solid var(--edge);background:var(--paper2);color:var(--ink);font-size:1.3rem;cursor:pointer}
+.pickup .big{font-family:"Noto Serif Thai",Georgia,serif;font-variant-numeric:tabular-nums;font-size:2.4rem;font-weight:600;min-width:5ch;text-align:center;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--wood);margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--edge);background:transparent;color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:.92rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--wood);border-color:var(--wood);color:var(--paper);font-weight:600}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--wood);outline-offset:2px}
+.alert{display:none;background:var(--wood-soft);border:1px solid var(--wood);border-radius:16px;padding:14px 16px;margin-bottom:22px}
+.alert.show{display:block}
+.alert p{margin:0 0 10px}
+.timeline{list-style:none;margin:28px 0 0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:62px;top:8px;bottom:8px;width:2px;background:repeating-linear-gradient(180deg,var(--edge) 0 6px,transparent 6px 12px)}
+.stop{display:grid;grid-template-columns:52px 1fr;gap:20px;margin-bottom:18px;position:relative}
+.time{font-family:"Noto Serif Thai",Georgia,serif;font-variant-numeric:tabular-nums;font-weight:600;font-size:1.15rem;text-align:right;padding-top:14px;transition:color .3s;color:var(--ink)}
+.time.flash{color:var(--wood)}
+.stop::after{content:"";position:absolute;left:57px;top:21px;width:12px;height:12px;border-radius:50%;background:var(--wood);border:3px solid var(--bg)}
+.card{background:var(--paper);border:1px solid var(--edge);border-radius:20px;padding:14px 16px;margin-left:8px}
+.card h2{font-size:1.08rem;margin:0 0 2px;font-weight:600}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.travel{color:var(--muted);font-size:.85rem;margin:-6px 0 14px 80px}
+details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;color:var(--wood);font-weight:600;font-size:.93rem}
+details p,details li{font-size:.93rem}
+details ul{padding-left:20px;margin:6px 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font:inherit;font-size:.9rem;padding:8px 16px;border-radius:999px;border:1px solid var(--wood);color:var(--wood);background:transparent;cursor:pointer;font-weight:500}
+.btn.solid,.btn.warn{background:var(--wood);color:var(--paper);border-color:var(--wood);font-weight:600}
+.note{font-size:.85rem;color:var(--muted);margin-top:8px}
+.share{margin-top:28px;background:var(--paper);border:1px solid var(--edge);border-radius:22px;padding:18px}
+.share h2{font-family:"Noto Serif Thai",Georgia,serif;font-size:1.2rem;margin:0 0 8px}
+textarea{width:100%;min-height:150px;border-radius:12px;border:1px solid var(--edge);background:var(--paper2);color:var(--ink);font:inherit;font-size:.88rem;padding:10px;display:none;margin-top:10px}
+.park{margin-top:12px;border-radius:14px;background:var(--paper2);padding:10px 12px;font-size:.9rem}
+.park b{font-variant-numeric:tabular-nums}
+.park.over{background:var(--wood-soft);border:1px solid var(--wood)}
+.park p{margin:2px 0}
+.dish{display:grid;gap:10px;margin-top:12px}
+.opt{border:1px solid var(--edge);border-radius:14px;padding:10px 12px;cursor:pointer;background:transparent;color:var(--ink);text-align:left;font:inherit}
+.opt[aria-pressed="true"]{border:2px solid var(--wood);background:var(--wood-soft)}
+.opt strong{display:block;font-size:.98rem}
+.opt span{font-size:.85rem;color:var(--muted)}
+.recap-wrap{margin-top:36px}
+.recap-hint{text-align:center;color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.recap{position:relative;overflow:hidden;max-width:420px;margin:0 auto;border-radius:28px;padding:26px 22px 22px;background:linear-gradient(170deg,var(--paper) 0%,var(--paper2) 100%);border:1px solid var(--edge);box-shadow:0 18px 40px rgba(47,74,58,.18)}
+.recap::before{content:"";position:absolute;inset:-40px -40px auto auto;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--wood) 22%,transparent) 0%,transparent 70%)}
+.recap-top{position:relative;text-align:center;margin-bottom:18px}
+.recap-icon{font-size:1.8rem;line-height:1}
+.recap h3{font-family:"Noto Serif Thai",Georgia,serif;font-weight:600;font-size:1.6rem;margin:6px 0 2px}
+.recap-sub{color:var(--muted);font-size:.9rem;margin:0}
+.recap-line{height:1px;margin:14px auto 0;width:60%;background:repeating-linear-gradient(90deg,var(--wood) 0 6px,transparent 6px 12px)}
+.recap ol{list-style:none;margin:0;padding:0;position:relative}
+.recap li{display:grid;grid-template-columns:58px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--edge)}
+.recap li:last-child{border-bottom:0}
+.recap .rt{font-family:"Noto Serif Thai",Georgia,serif;font-weight:600;font-size:1.1rem;color:var(--wood);font-variant-numeric:tabular-nums}
+.recap .rp{font-weight:600;line-height:1.35}
+.recap .rd{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
+.recap-foot{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.recap-pill{background:var(--paper);border:1px solid var(--edge);border-radius:14px;padding:8px 10px;font-size:.8rem;line-height:1.35}
+.recap-pill b{display:block;font-size:.95rem;font-variant-numeric:tabular-nums}
+.recap-pill.over{border-color:var(--wood);background:var(--wood-soft)}
+.recap-end{grid-column:1/-1;text-align:center;font-size:.85rem;color:var(--muted);margin-top:4px}
+.theme-toggle{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--edge);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.time{transition:none}}
+</style>
+</head>
+<body>
+<button type="button" class="theme-toggle" id="themeToggle"></button>
+<main class="wrap">
+  <h1>Let’s Relax Planning</h1>
+  <p class="lede">นวด ทานข้าวญี่ปุ่น แช่ออนเซ็น แล้วปิดท้ายด้วยซูชิ ปรับเวลารับได้ ทุกจุดและเวลาจอดรถจะขยับตามให้เอง</p>
+
+  <section class="controls" aria-label="ปรับแผน">
+    <div class="ctrl">
+      <span class="ctrl-label">ไปรับกี่โมง</span>
+      <div class="pickup">
+        <button type="button" id="minus" aria-label="เร็วขึ้น 5 นาที">−</button>
+        <span class="big" id="pickupBig" aria-live="polite">09:35</span>
+        <button type="button" id="plus" aria-label="ช้าลง 5 นาที">+</button>
+      </div>
+      <input type="range" id="pickupRange" min="510" max="690" step="5" value="575" aria-label="เวลาไปรับ">
+    </div>
+    <div class="ctrl">
+      <span class="ctrl-label">นวดที่ AURASOL นานเท่าไร</span>
+      <div class="chips" data-group="massage">
+        <button class="chip" data-v="60">60 นาที</button>
+        <button class="chip" data-v="90">90 นาที</button>
+        <button class="chip" data-v="120">120 นาที</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <span class="ctrl-label">อยู่ที่ PAÑPURI นานเท่าไร</span>
+      <div class="chips" data-group="panpuri">
+        <button class="chip" data-v="120">2 ชม.</button>
+        <button class="chip" data-v="180">3 ชม.</button>
+        <button class="chip" data-v="240">4 ชม.</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="alert" id="alert" role="status">
+    <p id="alertText"></p>
+    <a class="btn warn" id="reschedLink" target="_blank" rel="noopener">เปิดหน้าจองเพื่อเลื่อนเวลานวด</a>
+  </div>
+
+  <ol class="timeline">
+    <li class="stop">
+      <div class="time" data-t="pickup">09:35</div>
+      <div class="card">
+        <h2>ไปรับ</h2>
+        <p class="meta">เผื่อเวลาเดินทางเข้าสาทรประมาณ 40 นาที</p>
+      </div>
+    </li>
+    <li class="stop">
+      <div class="time" data-t="massage">10:30</div>
+      <div class="card">
+        <h2>นวดที่ AURASOL Wellness &amp; Spa</h2>
+        <p class="meta">ชั้น 11 อาคารสาธรนครทาวเวอร์ ถ.สาทรเหนือ · ใกล้ BTS ช่องนนทรี</p>
+        <p class="meta" id="massageEnd"></p>
+        <details>
+          <summary>การจองและการเดินทาง</summary>
+          <ul>
+            <li>นัดเดิม 10:30 น. ควรถึงก่อนราว 15 นาทีเพื่อเช็กอิน</li>
+            <li>เปิดทุกวัน 10:00–24:00 น.</li>
+            <li>จาก BTS ช่องนนทรี เดินประมาณ 3 นาที ทางเชื่อมไปอาคารสาทรธานี แล้วไปตึกฝั่งตรงข้าม (สาธรนคร) ขึ้นชั้น 11</li>
+            <li>คิวค่อนข้างแน่น ถ้าจะเลื่อนเวลาควรเลื่อนผ่านช่องทางที่จองไว้ล่วงหน้า</li>
+          </ul>
+        </details>
+        <div class="actions">
+          <a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=AURASOL+Wellness+Spa+Sathorn+Nakhon+Tower">แผนที่</a>
+          <a class="btn" id="bookLink" target="_blank" rel="noopener">หน้าจอง / เลื่อนนัด</a>
+        </div>
+      </div>
+    </li>
+    <li class="stop">
+      <div class="time" data-t="lunch">12:10</div>
+      <div class="card">
+        <h2>มื้อเที่ยงที่ The Japan</h2>
+        <p class="meta">ชั้น 1 อาคารสาทรธานี (ตึกเชื่อมกับที่นวด เดินถึงได้เลย)</p>
+        <details>
+          <summary>ความเป็นมาของร้าน</summary>
+          <p>The Japan เป็นร้านอาหารญี่ปุ่นเก่าแก่ย่านสาทรที่ตั้งอยู่ในสมาคมชาวญี่ปุ่นในประเทศไทย ซึ่งเดิมชื่อสมาคมชาวญี่ปุ่นแห่งสยาม และเปลี่ยนชื่อเป็นชื่อปัจจุบันในปี 1939</p>
+          <p>ร้านขึ้นชื่อเรื่องรสชาติญี่ปุ่นแบบดั้งเดิม ไม่ปรุงแต่งมาก บรรยากาศเหมือนโรงอาหารมากกว่าร้านหรู แต่ราคาถูกกว่าร้านญี่ปุ่นทั่วไปในเมืองราว 30–40% ไม่มีเซอร์วิสชาร์จหรือ VAT และมีชาเขียวร้อน/เย็นเติมฟรี</p>
+        </details>
+        <details>
+          <summary>เมนูแนะนำ</summary>
+          <ul>
+            <li><b>Chirashi box set</b> เมนูที่คนรีวิวแนะนำมากที่สุด</li>
+            <li><b>ซาชิมิ</b> จุดเด่นของร้าน สดและราคาดี</li>
+            <li><b>อุด้ง/โซบะ</b> เช่น คิทสึเนะอุด้ง ทานง่ายหลังนวด</li>
+          </ul>
+          <p class="note">มีรีวิวบางส่วนบอกว่าของทอดอย่างเกี๊ยวซ่าและคาราอาเกะเสิร์ฟไม่ค่อยร้อน ถ้าอยากชัวร์เน้นของสดกับเส้นจะดีกว่า</p>
+        </details>
+        <p class="note">วันธรรมดาช่วงเที่ยงคนแน่นมาก ถ้าไปตรงเที่ยงอาจต้องรอคิว</p>
+        <div class="actions">
+          <a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=The+Japan+Restaurant+Sathorn+Thani">แผนที่</a>
+        </div>
+        <div class="park" id="parkSathorn"></div>
+      </div>
+    </li>
+    <li class="travel" aria-hidden="true" style="list-style:none">นั่งรถจากสาทรไปราชประสงค์ ประมาณ 30 นาที</li>
+    <li class="stop">
+      <div class="time" data-t="panpuri">13:50</div>
+      <div class="card">
+        <h2>PAÑPURI Wellness</h2>
+        <p class="meta">ชั้น 12 Gaysorn Tower, Gaysorn Village ถ.เพลินจิต</p>
+        <p class="meta" id="panpuriEnd"></p>
+        <details>
+          <summary>มีอะไรบ้างและวิธีจอง</summary>
+          <ul>
+            <li>ออนเซ็นสาธารณะแยกชาย–หญิง 5 บ่อ ห้องขัดผิว Akasuri ห้องนวดไทย และ Wellness Bar</li>
+            <li>บ่อเด่นใช้น้ำแร่จากเมืองออนเซ็นคุซัตสึของญี่ปุ่น</li>
+            <li>เปิดทุกวัน 10:00–22:00 น. จองทรีตเมนต์ได้ถึง 20:30 น.</li>
+            <li>จองล่วงหน้าทาง LINE @PANPURI, โทร 02 253 8899 หรืออีเมล reservations@panpuri.com</li>
+          </ul>
+        </details>
+        <div class="actions">
+          <a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=PANPURI+Wellness+Gaysorn+Tower">แผนที่</a>
+          <a class="btn" href="tel:+6622538899">โทร</a>
+          <a class="btn" target="_blank" rel="noopener" href="https://line.me/R/ti/p/@panpuri">LINE</a>
+        </div>
+        <div class="park" id="parkGaysorn"></div>
+      </div>
+    </li>
+    <li class="stop">
+      <div class="time" data-t="dinner">17:05</div>
+      <div class="card">
+        <h2>มื้อเย็น เลือกร้านได้</h2>
+        <p class="meta" id="dinnerMeta"></p>
+        <div class="dish" id="dishList"></div>
+        <details open>
+          <summary id="rName">รายละเอียดร้าน</summary>
+          <p id="rDesc"></p>
+          <ul id="rPoints"></ul>
+          <p class="note" id="rNote"></p>
+        </details>
+        <div class="actions" id="rActions"></div>
+        <div class="park" id="parkDinner"></div>
+      </div>
+    </li>
+  </ol>
+
+  <section class="recap-wrap" aria-label="สรุปทริป">
+    <p class="recap-hint">📸 แคปหน้าจอการ์ดนี้ส่งต่อได้เลย หรือคัดลอกด้านล่าง</p>
+    <div class="recap" id="recap">
+      <div class="recap-top">
+        <div class="recap-icon">♨️</div>
+        <h3>Let’s Relax Planning</h3>
+        <p class="recap-sub">Aurasol → Panpuri Wellness</p>
+        <div class="recap-line"></div>
+      </div>
+      <ol id="recapList"></ol>
+      <div class="recap-foot" id="recapFoot"></div>
+    </div>
+  </section>
+
+  <section class="share">
+    <h2>ส่งแผนที่เลือกแล้ว</h2>
+    <p class="meta">คัดลอกสรุปแผนตามเวลาที่ปรับไว้ แล้ววางได้เลย</p>
+    <div class="actions"><button class="btn solid" id="copyBtn" type="button">คัดลอกสรุปแผน</button></div>
+    <textarea id="summaryBox" readonly aria-label="สรุปแผน"></textarea>
+  </section>
+</main>
+
+<script>
+// ใส่ลิงก์หน้าการจองจริงของ AURASOL ตรงนี้ (เช่นหน้า My bookings ของแพลตฟอร์มที่จอง)
+const AURASOL_BOOKING_URL = "https://www.klook.com/activity/156287-aurasol-wellness-spa-experience-at-sathorn-bangkok/";
+const ORIGINAL_MASSAGE = 10*60+30;
+
+const RESTOS = {
+  maguro:{name:"MAGURO",where:"centralwOrld",short:"ตัวเทียบหลัก ปลาหั่นหนา เมนูหลากหลาย",
+    desc:"ร้านซูชิและอาหารญี่ปุ่นระดับพรีเมียม จุดเด่นคือปลาที่หั่นหนาและสด เมนูให้เลือกเยอะ คนนิยมมาก",
+    points:["เมนูเด็ด: Seven Oceans, โรลแซลมอนสอดไส้อโวคาโดราดซอสสไปซี่, ข้าวหน้าทะเลรวม","บางสาขาคิวยาวมากช่วงหัวค่ำ ควรไปก่อน 18:00"],
+    note:"",walk:15,drive:0,q:"MAGURO+centralwOrld+Bangkok",tel:""},
+  cyu:{name:"Sushi Cyu",where:"centralwOrld ชั้น 3 โซน Atrium",short:"โอมากาเสะราคาเข้าถึงง่าย เปิดตามเวลาห้าง",
+    desc:"ร้านซูชิจากเครือญี่ปุ่น มีทั้งเซตโอมากาเสะ โรลทำมือ และซาชิมิ ทำสดโดยทีมเชฟญี่ปุ่น ไม่ต้องจองเป็นรอบเหมือนร้านโอมากาเสะทั่วไป",
+    points:["เมนูเด็ด: Bara Chirashi (ข้าวหน้าซาชิมิหั่นเต๋า), Oyako Don, แฮนด์โรล","มีสาเกให้เลือกหลายแบบ","โทร 065-731-4844"],
+    note:"",walk:15,drive:0,q:"Sushi+Cyu+centralwOrld",tel:"+66657314844"},
+  omd:{name:"OMD by Teppen",where:"สาขา Central Park (สีลม–พระราม 4)",short:"ข้าวด้งโอมากาเสะบนเคาน์เตอร์ ราคาย่อมเยา",
+    desc:"ร้านดงบุริพรีเมียมที่เสิร์ฟบน Open Counter เจ้าแรกในไทย เชฟทำสดต่อหน้า เน้นเร็วแต่คุณภาพดี",
+    points:["สั่งแบบจานเดี่ยวหรือเป็นเซตที่มีสลัด ซุป และซาชิมิ 5 หรือ 7 ชนิด","งบประมาณหัวละราว 229–500 บาท ถูกกว่าร้านอื่นในลิสต์","เปิดทุกวัน 10:00–22:00 น."],
+    note:"ยังไม่เจอสาขาในย่านราชประสงค์ ต้องขับรถไปสาขา Central Park ประมาณ 20 นาที เลยต้องย้ายรถจาก Gaysorn",walk:0,drive:20,q:"OMD+by+Teppen+Central+Park+Bangkok",tel:""},
+  onodera:{name:"Kaiten Sushi Ginza Onodera",where:"centralwOrld ชั้น 7",short:"ซูชิสายพานเกรดโอมากาเสะ เครือเดียวกับ MAGURO",
+    desc:"ซูชิสายพานพรีเมียมจากกลุ่ม Onodera ของญี่ปุ่น บริหารโดย MAGURO Group สาขาแรกในไทยและเป็นแฟลกชิปใหญ่ที่สุดในเอเชีย เปิดเมื่อ 28 ก.ค. 2026",
+    points:["ใช้เทคนิคซูชิแบบ Edomae บ่มและหมักปลาเพื่อดึงอูมามิ","ราคาต่อจาน 30–690 บาท เลือกทีละคำตามงบได้","มี 120 ที่นั่ง แต่ร้านใหม่ คาดว่าคิวน่าจะยาว"],
+    note:"",walk:15,drive:0,q:"Kaiten+Sushi+Ginza+Onodera+centralwOrld",tel:""}
+};
+const DINNER_MIN=120;
+const state = {pickup:575, massage:90, panpuri:180, resto:"onodera"};
+try{ const s=JSON.parse(localStorage.getItem("tripPlan")||"null"); if(s){ Object.assign(state,s); if(!RESTOS[state.resto]) state.resto="onodera"; delete state.mall; } }catch(e){}
+
+const fmt = m => String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const $ = s => document.querySelector(s);
+
+function compute(){
+  const t={};
+  t.pickup=state.pickup;
+  t.massage=t.pickup+55;              // เดินทาง 40 + เช็กอิน 15
+  t.massageEnd=t.massage+state.massage;
+  t.lunch=t.massageEnd+10;            // เดินไปตึกสาทรธานี
+  t.lunchEnd=t.lunch+70;
+  t.panpuri=t.lunchEnd+30;            // นั่งรถไปราชประสงค์
+  t.panpuriEnd=t.panpuri+state.panpuri;
+  const r=RESTOS[state.resto]; t.dinner=t.panpuriEnd+(r.drive||r.walk); t.dinnerEnd=t.dinner+DINNER_MIN;
+  t.sathornIn=t.pickup+40;
+  return t;
+}
+
+let prev={};
+function render(){
+  const t=compute();
+  $("#pickupBig").textContent=fmt(t.pickup);
+  $("#pickupRange").value=t.pickup;
+  document.querySelectorAll(".time").forEach(el=>{
+    const k=el.dataset.t, v=fmt(t[k]);
+    if(el.textContent!==v){el.textContent=v; if(prev[k]){el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),700);}}
+    prev[k]=v;
+  });
+  $("#massageEnd").textContent="นวดเสร็จประมาณ "+fmt(t.massageEnd)+" น.";
+  $("#panpuriEnd").textContent="ออกจาก PAÑPURI ประมาณ "+fmt(t.panpuriEnd)+" น.";
+  renderDinner(t);
+  renderParking(t);
+  renderRecap(t);
+  document.querySelectorAll(".chips").forEach(g=>{
+    g.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.v===String(state[g.dataset.group]))));
+  });
+  const alert=$("#alert");
+  if(t.massage!==ORIGINAL_MASSAGE){
+    let msg="เวลานวดจะเปลี่ยนจาก 10:30 เป็น "+fmt(t.massage)+" น. ต้องเลื่อนนัดกับ AURASOL ก่อน";
+    if(t.massage<600) msg+=" (ร้านเปิด 10:00 น. ลองไปรับช้าลงอีกนิด)";
+    $("#alertText").textContent=msg; alert.classList.add("show");
+  } else alert.classList.remove("show");
+  try{localStorage.setItem("tripPlan",JSON.stringify(state));}catch(e){}
+  return t;
+}
+
+const dur = m => { const h=Math.floor(m/60), mm=m%60; return (h?h+" ชม. ":"")+(mm?mm+" นาที":"").trim() || "0 นาที"; };
+function parkBox(id,place,mins,freeText,freeMin,extra){
+  const el=document.getElementById(id); const over=freeMin && mins>freeMin;
+  el.className="park"+(over?" over":"");
+  el.innerHTML="<p>🅿️ "+place+": จอดประมาณ <b>"+dur(mins)+"</b></p><p>ฟรี: "+freeText+"</p>"+
+    (over?"<p><b>เกินเวลาฟรีราว "+dur(mins-freeMin)+"</b> เตรียมจ่ายค่าจอดส่วนเกิน</p>":"")+(extra?"<p class='note'>"+extra+"</p>":"");
+}
+function renderParking(t){
+  parkBox("parkSathorn","อาคารสาทรธานี/สาธรนคร",t.lunchEnd-t.sathornIn,"2 ชม. เมื่อทานที่ The Japan",120,
+    "จอดครั้งเดียวใช้ทั้งที่นวดและมื้อเที่ยง AURASOL ยังไม่มีข้อมูลการประทับตรา ถามที่เคาน์เตอร์ตอนเช็กอินได้");
+  const r=RESTOS[state.resto];
+  if(r.drive){
+    parkBox("parkGaysorn","Gaysorn Village",t.panpuriEnd-t.panpuri+10,"ประมาณ 4 ชม. เมื่อใช้จ่ายครบ 500 บาท (บางแหล่งบอก 2 ชม. แรกฟรี)",240,
+      "ข้อมูลยังไม่ตรงกัน ขอตราประทับที่เคาน์เตอร์ PAÑPURI ไว้ก่อน");
+    parkBox("parkDinner","ห้างที่ร้าน OMD ตั้งอยู่",DINNER_MIN+10,"ยังไม่มีข้อมูล เช็กที่ห้างอีกครั้ง",0,"");
+  } else {
+    parkBox("parkGaysorn","Gaysorn Village (จอดยาวถึงมื้อเย็น)",t.dinnerEnd+r.walk-t.panpuri+10,"ประมาณ 4 ชม. เมื่อใช้จ่ายครบ 500 บาท (บางแหล่งบอก 2 ชม. แรกฟรี)",240,
+      "ไม่ต้องย้ายรถ เดินสกายวอล์กชั้น 2 ไป centralwOrld ได้ ขอตราประทับที่ PAÑPURI ไว้ก่อน");
+    const el=document.getElementById("parkDinner"); el.className="park";
+    el.innerHTML="<p>🅿️ ถ้าอยากย้ายรถไปจอดที่ centralwOrld: ฟรี 2 ชม. แรก ชม. ที่ 3–4 ชั่วโมงละ 20 บาท หรือฟรี 4 ชม. เมื่อใช้จ่ายครบ 800 บาท</p>";
+  }
+}
+function renderRecap(t){
+  const r=RESTOS[state.resto];
+  const rows=[
+    [t.pickup,"ไปรับ","วัดคอนเซ็ปชัญแห่งพระแม่เจ้า"],
+    [t.massage,"AURASOL · นวด "+state.massage+" นาที","ชั้น 11 สาธรนครทาวเวอร์"],
+    [t.lunch,"The Japan · มื้อเที่ยง","ชั้น 1 อาคารสาทรธานี"],
+    [t.panpuri,"PAÑPURI Wellness · "+(state.panpuri/60)+" ชม.","ชั้น 12 Gaysorn Tower"],
+    [t.dinner,r.name+" · มื้อเย็น",r.where]
+  ];
+  document.getElementById("recapList").innerHTML=rows.map(x=>'<li><span class="rt">'+fmt(x[0])+'</span><span class="rp">'+x[1]+'<span class="rd">'+x[2]+'</span></span></li>').join("");
+  const sath=t.lunchEnd-t.sathornIn;
+  const gay=r.drive?(t.panpuriEnd-t.panpuri+10):(t.dinnerEnd+r.walk-t.panpuri+10);
+  const pill=(label,m,free,freeTxt)=>'<div class="recap-pill'+(m>free?' over':'')+'">🅿️ '+label+'<b>'+dur(m)+'</b>ฟรี '+freeTxt+'</div>';
+  document.getElementById("recapFoot").innerHTML=pill("สาทร",sath,120,"2 ชม.")+pill("Gaysorn",gay,240,"~4 ชม.")+'<div class="recap-end">กลับบ้านประมาณ '+fmt(t.dinnerEnd)+' น.</div>';
+}
+function renderDinner(t){
+  const list=document.getElementById("dishList");
+  if(!list.children.length){
+    Object.entries(RESTOS).forEach(([k,r])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"; b.dataset.k=k;
+      b.innerHTML="<strong>"+r.name+"</strong><span>"+r.where+" · "+r.short+"</span>";
+      b.onclick=()=>{state.resto=k;render();}; list.appendChild(b);
+    });
+  }
+  list.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===state.resto)));
+  const r=RESTOS[state.resto];
+  document.getElementById("dinnerMeta").textContent=(r.drive?"ขับรถจาก Gaysorn ประมาณ "+r.drive+" นาที":"เดินจาก PAÑPURI ผ่านสกายวอล์กประมาณ "+r.walk+" นาที")+" · ทานถึงราว "+fmt(t.dinnerEnd)+" น.";
+  document.getElementById("rName").textContent=r.name+" · "+r.where;
+  document.getElementById("rDesc").textContent=r.desc;
+  document.getElementById("rPoints").innerHTML=r.points.map(p=>"<li>"+p+"</li>").join("");
+  const n=document.getElementById("rNote"); n.textContent=r.note; n.style.display=r.note?"block":"none";
+  document.getElementById("rActions").innerHTML='<a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+r.q+'">Google Maps</a>'+(r.tel?'<a class="btn" href="tel:'+r.tel+'">โทร</a>':"");
+}
+
+function summary(){
+  const t=compute(), r=RESTOS[state.resto];
+  return [
+    "Let’s Relax Planning",
+    fmt(t.pickup)+" ไปรับ",
+    fmt(t.massage)+" นวดที่ AURASOL ("+state.massage+" นาที) ชั้น 11 สาธรนครทาวเวอร์",
+    fmt(t.lunch)+" มื้อเที่ยง The Japan ชั้น 1 สาทรธานี",
+    fmt(t.panpuri)+" PAÑPURI Wellness ชั้น 12 Gaysorn Tower (ถึง "+fmt(t.panpuriEnd)+")",
+    fmt(t.dinner)+" มื้อเย็นที่ "+r.name+" ("+r.where+")",
+    location.href
+  ].join("\n");
+}
+
+$("#bookLink").href=AURASOL_BOOKING_URL;
+$("#reschedLink").href=AURASOL_BOOKING_URL;
+$("#minus").onclick=()=>{state.pickup=Math.max(510,state.pickup-5);render();};
+$("#plus").onclick=()=>{state.pickup=Math.min(690,state.pickup+5);render();};
+$("#pickupRange").oninput=e=>{state.pickup=+e.target.value;render();};
+document.querySelectorAll(".chips").forEach(g=>g.addEventListener("click",e=>{
+  const c=e.target.closest(".chip"); if(!c) return;
+  const k=g.dataset.group; state[k]=k==="mall"?c.dataset.v:+c.dataset.v; render();
+}));
+$("#copyBtn").onclick=async()=>{
+  const text=summary(), box=$("#summaryBox");
+  box.value=text;
+  try{ await navigator.clipboard.writeText(text); $("#copyBtn").textContent="คัดลอกแล้ว"; setTimeout(()=>$("#copyBtn").textContent="คัดลอกสรุปแผน",1800); }
+  catch(e){ box.style.display="block"; box.focus(); box.select(); $("#copyBtn").textContent="กดค้างที่ข้อความเพื่อคัดลอก"; }
+};
+function paintToggle(){const d=document.documentElement.dataset.theme==="dark";$("#themeToggle").textContent=d?"☀️ โหมดสว่าง":"🌙 โหมดมืด";$("#themeToggle").setAttribute("aria-label",d?"เปลี่ยนเป็นโหมดสว่าง":"เปลี่ยนเป็นโหมดมืด");}
+$("#themeToggle").onclick=()=>{const n=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=n;try{localStorage.setItem("tripTheme",n);}catch(e){}paintToggle();};
+paintToggle();
+render();
+</script>
+</body>
+</html>
