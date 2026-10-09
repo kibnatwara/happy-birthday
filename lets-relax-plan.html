@@ -300,8 +300,8 @@ function compute(){
   t.massage=t.pickup+55;              // เดินทาง 40 + เช็กอิน 15
   t.massageEnd=t.massage+state.massage;
   t.lunch=t.massageEnd+10;            // เดินไปตึกสาทรธานี
-  t.lunchEnd=t.lunch+70;
-  t.panpuri=t.lunchEnd+30;            // นั่งรถไปราชประสงค์
+  t.lunchEnd=t.lunch+60;
+  t.panpuri=t.lunchEnd+50;            // นั่งรถไปราชประสงค์
   t.panpuriEnd=t.panpuri+state.panpuri;
   const r=RESTOS[state.resto]; t.dinner=t.panpuriEnd+(r.drive||r.walk); t.dinnerEnd=t.dinner+DINNER_MIN;
   t.sathornIn=t.pickup+40;
